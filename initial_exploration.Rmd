@@ -1,0 +1,43 @@
+---
+title: "Initial exploration of ukbiobank depression gwas"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Depression GWAS
+
+### Description:
+
+These are GWAS summary statistics for both sexes that are diagnosed with depression.
+
+**Filename:** F5_DEPRESSIO.gwas.imputed_v3.both_sexes.tsv
+**Online location:** https://docs.google.com/spreadsheets/d/1kvPoupSzsSFBNSztMzl04xMoSC3Kcx3CrjVf4yBmESU/edit#gid=178908679
+
+**Commandline wget:** wget https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/additive-tsvs/F5_DEPRESSIO.gwas.imputed_v3.both_sexes.tsv.bgz -O F5_DEPRESSIO.gwas.imputed_v3.both_sexes.tsv.bgz
+
+```{r}
+#Load data 
+# ***catuation*** large file.
+
+dep.summary <- read.table("../../practice/practice/data/F5_DEPRESSIO.gwas.imputed_v3.both_sexes.tsv", header = TRUE, sep='\t')
+```
+
+
+```{r}
+dep.summary.significant <- dep.summary[dep.summary$pval <.05,]
+dep.summary.significant <- na.omit(dep.summary.significant)
+dep.summary.significant <- dep.summary.significant[order(dep.summary.significant$pval),]
+
+head(dep.summary.significant,10)
+```
+
+Looking at this dataframe, we can make it more user friendly by separating the variant column. We can separate the variant call into three separate columns: chromosome, location, mutation. For the new chromosome column, we can add 'chr' to the front. This will make it easier later when connecting to different data frames.
+
+```{r}
+
+```
+
+
+
+
