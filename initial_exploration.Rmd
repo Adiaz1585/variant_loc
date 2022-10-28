@@ -28,16 +28,118 @@ dep.summary <- read.table("../../practice/practice/data/F5_DEPRESSIO.gwas.impute
 dep.summary.significant <- dep.summary[dep.summary$pval <.05,]
 dep.summary.significant <- na.omit(dep.summary.significant)
 dep.summary.significant <- dep.summary.significant[order(dep.summary.significant$pval),]
+dep.summary.significant <- na.omit(dep.summary.significant)
 
 head(dep.summary.significant,10)
 ```
 
-Looking at this dataframe, we can make it more user friendly by separating the variant column. We can separate the variant call into three separate columns: chromosome, location, mutation. For the new chromosome column, we can add 'chr' to the front. This will make it easier later when connecting to different data frames.
+Looking at this data frame, we can make it more user friendly by separating the variant column. We can separate the variant call into three separate columns: chromosome, location, mutation. For the new chromosome column, we can add 'chr' to the front. This will make it easier later when connecting to different data frames.
 
 ```{r}
+#split data
+subset <- head(dep.summary.significant,10)
+
+mat <- matrix(unlist(strsplit(dep.summary.significant$variant,split = ':')), ncol = 4, byrow = T)
+colnames(mat) <- c('chr','position','common','variant')
+dep.summary.significant <- cbind(dep.summary.significant[], as.data.frame(mat)[,1:2])
+conames <- colnames(dep.summary.significant)
+conames[13] <- 'chr'
+conames[14] <- 'position'
+colnames(dep.summary.significant) <- conames
+
+dep.summary.significant$chr <- paste0('chr', dep.summary.significant$chr)
+```
+
+The new dataframe will be save to be used later(preferably in a faster language).
+
+```{r}
+write.csv(dep.summary.significant, "../../practice/practice/data/depression_gwas.csv")
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## This could be made into a function that previews a data frame before loading in the whole thing.
+
+```{r}
+
+prev <- function(filename){
+  command = paste0('head ', filename)
+
+  
+  dat = system(command,intern = TRUE)
+  dat = unlist(strsplit(dat, ','))
+  print(dat)
+  dat = matrix(dat, ncol = 22, byrow = T)
+  dat = as.data.frame(dat)
+  names = dat[1,]
+  dat = dat[-1,]
+  colnames(dat) <- names
+  return(dat)
+}
+
+prev("../../practice/practice/data/results_1.csv")
+
+```
 
 
 
