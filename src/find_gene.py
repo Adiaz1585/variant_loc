@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 from time import sleep
-from random import random
+#from random import random
 from tqdm import tqdm
 from multiprocessing import Process
 import warnings
@@ -67,7 +67,8 @@ def main():
 
 	for process in processes:
 		process.start()
-	for process in tqdm(processes):
+	# for process in tqdm(processes):
+	for process in processes:
 		process.join()
 	print()	
 	print('done',flush=True )
