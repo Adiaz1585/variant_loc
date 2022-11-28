@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "find_gene.py", line 5, in <module>
-    from tqdm import tqdm
-ModuleNotFoundError: No module named 'tqdm'

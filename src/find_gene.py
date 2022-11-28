@@ -2,7 +2,7 @@ import sys
 import pandas as pd
 from time import sleep
 #from random import random
-from tqdm import tqdm
+#from tqdm import tqdm
 from multiprocessing import Process
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
