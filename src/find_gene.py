@@ -39,8 +39,8 @@ def find_gene(variant, exon_chroms,found_genes,chrm,change):
 
 
 def main():
-	gwas_path 	= "/media/austin/local2/girirajan_rotation/practice/practice/data/depression_gwas.csv"
-	exon_path 	= "/media/austin/local2/girirajan_rotation/practice/practice/data/filtered_regions.csv"
+	gwas_path 	= "/data5/austin/work/practice/data/depression_gwas.csv"
+	exon_path 	= "/data5/austin/work/practice/data/filtered_regions.csv"
 	gwas_df 	= read_dat(gwas_path)
 	exons_df 	= read_dat(exon_path)
 
@@ -72,7 +72,7 @@ def main():
 	print()	
 	print('done',flush=True )
 
-	found_genes.to_csv("/media/austin/local2/girirajan_rotation/practice/practice/data/found_genes.csv")
+	found_genes.to_csv("/data5/austin/work/practice/data/found_genes.csv")
 
 	# print(chr1)
 	# print(gchr1)
