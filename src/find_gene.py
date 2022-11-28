@@ -1,7 +1,8 @@
 import sys
 import pandas as pd
+import numpy as np
 from time import sleep
-#from random import random
+# from random import random
 #from tqdm import tqdm
 from multiprocessing import Process, Queue
 import warnings
@@ -30,24 +31,42 @@ def find_gene(variant, exon_chroms, found_genes,chrm,change,q):
 	gene_name_ind = exon_chroms.columns.get_loc("gene_name")
 	start_ind 	  = exon_chroms.columns.get_loc("Start")
 	end_ind 	  = exon_chroms.columns.get_loc("End")
-	temp = pd.DataFrame({'chr': [],'gene' : [], 'position': [], 'variant': [], 'start': [],'end': []})
+	# temp = pd.DataFrame({'chr': [],'gene' : [], 'position': [], 'variant': [], 'start': [],'end': []})
+	temp = pd.DataFrame()
+
 
 	for row in exon_chroms.values:
 		if variant >= int(row[start_ind]) and variant <= int(row[end_ind]):
 			# print(variant)
 			#temp = pd.DataFrame({'chr': [chrm],'gene' : [row[gene_name_ind]], 'position': [variant], 'variant': [change], 'start': [row[start_ind]],'end': [row[end_ind]]})
-			temp.append([chrm,row[gene_name_ind],variant,change,row[start_ind],row[end_ind]])
+			tempdf = pd.DataFrame([[chrm,row[gene_name_ind],variant,change,int(row[start_ind]),int(row[end_ind])]], columns =['chr','gene','position','variant','start','end'])
+			temp = pd.concat((temp,tempdf),axis = 0)
+			# print([chrm,row[gene_name_ind],variant,change,row[start_ind],row[end_ind]])
+
 	found_genes = pd.concat((found_genes,temp),axis = 0)
+	# print(found_genes)
 	return found_genes
 
 
 def main():
-	# gwas_path 	= "/media/austin/local2/girirajan_rotation/practice/practice/data/depression_gwas.csv"
-	# exon_path 	= "/media/austin/local2/girirajan_rotation/practice/practice/data/filtered_regions.csv"
-	gwas_path 	= "/data5/austin/work/practice/data/depression_gwas.csv"
-	exon_path 	= "/data5/austin/work/practice/data/filtered_regions.csv"
+	gwas_path 	= "/media/austin/local2/girirajan_rotation/practice/practice/data/depression_gwas.csv"
+	exon_path 	= "/media/austin/local2/girirajan_rotation/practice/practice/data/filtered_regions.csv"
+	# gwas_path 	= "/data5/austin/work/practice/data/depression_gwas.csv"
+	# exon_path 	= "/data5/austin/work/practice/data/filtered_regions.csv"
 	gwas_df 	= read_dat(gwas_path)
 	exons_df 	= read_dat(exon_path)
+
+	# small random subset of both for t
+	###
+	random_sample_gwas  = np.random.choice(range(0,len(gwas_df)), 50000, replace = False).tolist()
+	random_sample_exons = np.random.choice(range(0,len(exons_df)),50000, replace = False).tolist()
+
+
+	gwas_df = gwas_df.iloc[random_sample_gwas]
+	exons_df = exons_df.iloc[random_sample_exons]
+
+	print(len(gwas_df))
+	###
 
 	gwas_df.rename(columns={'chr':'Chrom'},inplace=True)
 	#print(gwas_df.columns)
@@ -75,7 +94,8 @@ def main():
 	for process in processes:
 		process.start()
 	for process in processes:
-		ret = q.get() 
+		ret = q.get()
+		print(ret)
 		rets.append(ret)
 	# for process in tqdm(processes):
 	for process in processes:
@@ -88,7 +108,8 @@ def main():
 	print()	
 	print('done',flush=True )
 
-	all_genes.to_csv("/data5/austin/work/practice/data/found_genes.csv")
+	all_genes.to_csv("/media/austin/local2/girirajan_rotation/practice/practice/data/found_genes.csv")
+	# all_genes.to_csv("/data5/austin/work/practice/data/found_genes.csv")
 
 	# print(chr1)
 	# print(gchr1)
