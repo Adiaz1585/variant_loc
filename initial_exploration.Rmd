@@ -48,98 +48,16 @@ conames[14] <- 'position'
 colnames(dep.summary.significant) <- conames
 
 dep.summary.significant$chr <- paste0('chr', dep.summary.significant$chr)
+head(dep.summary.significant)
+
+
+system( )
+system('head ../../practice/practice/data/results_1.csv')
 ```
 
-The new dataframe will be save to be used later(preferably in a faster language).
 
-```{r}
-write.csv(dep.summary.significant, "../../practice/practice/data/depression_gwas.csv")
 
-```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## This could be made into a function that previews a data frame before loading in the whole thing.
-
-```{r}
-
-prev <- function(filename){
-  command = paste0('head ', filename)
-
-  
-  dat = system(command,intern = TRUE)
-  dat = unlist(strsplit(dat, ','))
-  print(dat)
-  dat = matrix(dat, ncol = 22, byrow = T)
-  dat = as.data.frame(dat)
-  names = dat[1,]
-  dat = dat[-1,]
-  colnames(dat) <- names
-  return(dat)
-}
-
-prev("../../practice/practice/data/results_1.csv")
-
-```
 
 
 
