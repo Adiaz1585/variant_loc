@@ -4,7 +4,7 @@
 #SBATCH --job-name=pract
 #SBATCH -o out.log
 #SBATCH -e error.log
-#SBATCH --time=4H
+#SBATCH --time=4:00:00
 #SBATCH --mem-per-cpu=256000
 #SBATCH --chdir /data5/austin/work/variant_loc/variant_loc/src
 #SBATCH --nodelist ramona
