@@ -15,11 +15,14 @@ def read_dat(filename, sep = ','):
 # This function iterates through each variant located in the specific
 # chromosome. A different function will be called to find specific genes
 # that variant might live within.
-def set_chrm(gchr,exon_chroms,chrm,q,found_genes):
+def set_chrm(gchr,exon_chroms,chrm,q):
+
+	found_genes_dict = {'chr': [],'gene' : [], 'position': [], 'variant': [], 'start': [],'end': []}
+	found_genes 	 = pd.DataFrame(data = found_genes_dict)
 	# print(gchr)
 	for var in gchr["position"]:
 		change = gchr.loc[gchr['position'] == var,'variant']
-		found_genes = pd.concat((found_genes,find_gene(var, exon_chroms, found_genes, chrm, change,q)),axis = 0)
+		found_genes = pd.concat((found_genes,find_gene(var, exon_chroms, chrm, change,q)),axis = 0)
 	q.put(found_genes)
 
 	# 	print(var)
@@ -27,12 +30,13 @@ def set_chrm(gchr,exon_chroms,chrm,q,found_genes):
 
 # This function will search for genes that the variant will live in.
 # it is not guaranteed that a variant lives with any gene.
-def find_gene(variant, exon_chroms, found_genes,chrm,change,q):
+def find_gene(variant, exon_chroms,chrm,change,q):
+
 	gene_name_ind = exon_chroms.columns.get_loc("gene_name")
 	start_ind 	  = exon_chroms.columns.get_loc("Start")
 	end_ind 	  = exon_chroms.columns.get_loc("End")
-	# temp = pd.DataFrame({'chr': [],'gene' : [], 'position': [], 'variant': [], 'start': [],'end': []})
-	temp = pd.DataFrame()
+	temp = pd.DataFrame({'chr': [],'gene' : [], 'position': [], 'variant': [], 'start': [],'end': []})
+	# temp = pd.DataFrame()
 
 
 	for row in exon_chroms.values:
@@ -42,10 +46,11 @@ def find_gene(variant, exon_chroms, found_genes,chrm,change,q):
 			tempdf = pd.DataFrame([[chrm,row[gene_name_ind],variant,change,int(row[start_ind]),int(row[end_ind])]], columns =['chr','gene','position','variant','start','end'])
 			temp = pd.concat((temp,tempdf),axis = 0)
 			# print([chrm,row[gene_name_ind],variant,change,row[start_ind],row[end_ind]])
+			# print("found")
 
-	found_genes = pd.concat((found_genes,temp),axis = 0)
+	
 	# print(found_genes)
-	return found_genes
+	return temp
 
 
 def main():
@@ -58,14 +63,14 @@ def main():
 
 	# small random subset of both for t
 	###
-	random_sample_gwas  = np.random.choice(range(0,len(gwas_df)), 50000, replace = False).tolist()
-	random_sample_exons = np.random.choice(range(0,len(exons_df)),50000, replace = False).tolist()
+	# random_sample_gwas  = np.random.choice(range(0,len(gwas_df)), 100000, replace = False).tolist()
+	# random_sample_exons = np.random.choice(range(0,len(exons_df)),100000, replace = False).tolist()
 
 
-	gwas_df = gwas_df.iloc[random_sample_gwas]
-	exons_df = exons_df.iloc[random_sample_exons]
+	# gwas_df = gwas_df.iloc[random_sample_gwas]
+	# exons_df = exons_df.iloc[random_sample_exons]
 
-	print(len(gwas_df))
+	# print(len(gwas_df))
 	###
 
 	gwas_df.rename(columns={'chr':'Chrom'},inplace=True)
@@ -79,8 +84,8 @@ def main():
 	
 	# print(chromes)
 
-	found_genes_dict = {'chr': [],'gene' : [], 'position': [], 'variant': [], 'start': [],'end': []}
-	found_genes 	 = pd.DataFrame(data = found_genes_dict)
+	# found_genes_dict = {'chr': [],'gene' : [], 'position': [], 'variant': [], 'start': [],'end': []}
+	# found_genes 	 = pd.DataFrame(data = found_genes_dict)
 
 	q 		  = Queue()
 	processes = []
@@ -89,13 +94,14 @@ def main():
 		exon_chroms = exons_df.loc[exons_df['Chrom'] == chrm]
 		gchr 		= gwas_df.loc[gwas_df['Chrom'] 	 ==  chrm]
 
-		processes.append(Process(target=set_chrm, args=(gchr,exon_chroms,chrm,q,found_genes,)))
+		processes.append(Process(target=set_chrm, args=(gchr,exon_chroms,chrm,q,)))
 
 	for process in processes:
 		process.start()
 	for process in processes:
 		ret = q.get()
-		print(ret)
+		# print("here ret")
+		# print(ret)
 		rets.append(ret)
 	# for process in tqdm(processes):
 	for process in processes:
@@ -103,6 +109,7 @@ def main():
 
 	all_genes = pd.DataFrame()
 	for item in rets:
+		# print("here")
 		all_genes = pd.concat((all_genes,item),axis = 0)
 
 	print()	
